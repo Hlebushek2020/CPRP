@@ -1,0 +1,7 @@
+# DIRECTORIES
+/CPRP/VS_Output/*
+/CPRP_Runner/VS_Output/*
+/.vs/*
+# FILES
+*Thumbs.db
+*.user
