@@ -1,0 +1,52 @@
+﻿<Window
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:CPRP"
+        xmlns:System="clr-namespace:System;assembly=mscorlib" x:Class="CPRP.MainWindow"
+        mc:Ignorable="d"
+        MinHeight="414"
+        Height="414" 
+        MinWidth="704"
+        Width="704"
+        WindowStartupLocation="CenterScreen"
+        FontSize="14">
+    <Grid Margin="10">
+        <GroupBox Header="Базовые настройки" Padding="5" VerticalAlignment="Top" Height="Auto">
+            <Grid>
+                <TextBox x:Name="textBox_App" Margin="0,0,95,0" IsReadOnlyCaretVisible="True" TextWrapping="NoWrap" Foreground="Gray" Text="Приложение" VerticalAlignment="Top"/>
+                <Button Content="Выбрать" HorizontalAlignment="Right" Margin="0,0,0,0" VerticalAlignment="Top" Width="90" Height="25" Click="Button_SelectApp_Click"/>
+                <ComboBox x:Name="comboBox_Priority" HorizontalAlignment="Left" Margin="78,29,0,0" SelectedIndex="0" VerticalAlignment="Top" Width="180"/>
+                <TextBlock HorizontalAlignment="Left" Margin="0,32,0,0" TextWrapping="Wrap" Text="Приоритет:" VerticalAlignment="Top"/>
+                <TextBox x:Name="textBox_OutputFolder" Margin="0,59,95,0" IsReadOnlyCaretVisible="True" TextWrapping="NoWrap" Text="Папка выходных файлов" Foreground="Gray" VerticalAlignment="Top" />
+                <Button x:Name="button_SelectOutputFolder" Content="Выбрать" HorizontalAlignment="Right" Margin="0,59,0,0" VerticalAlignment="Top" Width="90" Height="25" Click="Button_SelectOutputFolder_Click"/>
+            </Grid>
+        </GroupBox>
+        <GroupBox Header="Ярлык приложения" Margin="0,123,0,0" Padding="5" VerticalAlignment="Top" Height="Auto">
+            <Grid>
+                <RadioButton x:Name="radioButton_CreateShortcutOnDesktop" Content="Создать на рабочем столе" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" Checked="RadioButton_CreateShortcutOnDesktop_Checked" Unchecked="RadioButton_CreateShortcutOnDesktop_Unchecked"/>
+                <CheckBox x:Name="checkBox_IsReplaceDesktopShortcut" Content="Заменить существующий если совпадают имена" IsEnabled="False" HorizontalAlignment="Left" Margin="25,23,0,0" VerticalAlignment="Top"/>
+                <RadioButton Content="Создать в папке выходных файлов" IsChecked="True" HorizontalAlignment="Left" Margin="0,46,0,0" VerticalAlignment="Top"/>
+            </Grid>
+        </GroupBox>
+        <GroupBox Header="Расширения приложения" Margin="0,227,0,34" Padding="5">
+            <Grid>
+                <StackPanel Orientation="Horizontal" Height="20" VerticalAlignment="Top" Margin="0,0,0,0">
+                    <Button Style="{StaticResource MenuButtonStyle}" ToolTip="Добавить расширение в список">
+                        <Image Source="/Resources/add.png"/>
+                    </Button>
+                    <Button Style="{StaticResource MenuButtonStyle}" ToolTip="Удалить расширение(я) из списка" Click="Button_RemoveSelectedExtensions_Click">
+                        <Image Source="/Resources/delete.png"/>
+                    </Button>
+                    <Button Style="{StaticResource MenuButtonStyle}" ToolTip="Очистить список" Click="Button_ClearExtensionList_Click">
+                        <Image Source="/Resources/broom.png"/>
+                    </Button>
+                </StackPanel>
+                <ListBox x:Name="listBox_Extensions" SelectionMode="Multiple" Margin="0,25,0,0"/>
+            </Grid>
+        </GroupBox>
+        <Button Content="Закрыть" HorizontalAlignment="Right" Height="28" Margin="0,0,0,0" VerticalAlignment="Bottom" Width="90"/>
+        <Button Content="Применить" HorizontalAlignment="Right" Height="28" Margin="0,0,95,0" VerticalAlignment="Bottom" Width="110"/>
+    </Grid>
+</Window>

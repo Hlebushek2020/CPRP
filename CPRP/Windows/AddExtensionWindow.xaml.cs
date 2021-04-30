@@ -15,13 +15,15 @@ using System.Windows.Shapes;
 namespace CPRP
 {
     /// <summary>
-    /// Логика взаимодействия для Window_TEMP.xaml
+    /// Логика взаимодействия для AddExtensionWindow.xaml
     /// </summary>
-    public partial class Window_TEMP : Window
+    public partial class AddExtensionWindow : Window
     {
-        public Window_TEMP()
+        public AddExtensionWindow()
         {
             InitializeComponent();
+            // window
+            Title = App.Name;
         }
     }
 }
