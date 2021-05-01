@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -24,6 +25,8 @@ namespace CPRP
     /// </summary>
     public partial class MainWindow : Window
     {
+        private const string OutputFolderPlaceholder = "Папка выходных файлов";
+
         private readonly List<PriorityItem> priorityList = new List<PriorityItem>(6);
         private readonly ObservableCollection<string> extensionList = new ObservableCollection<string>();
 
@@ -43,6 +46,10 @@ namespace CPRP
             comboBox_Priority.ItemsSource = priorityList;
             comboBox_Priority.DisplayMemberPath = "Title";
             comboBox_Priority.SelectedItem = priorityNormal;
+            // TextBox OutputFolder
+            textBox_OutputFolder.Text = OutputFolderPlaceholder;
+            // extension list
+            listBox_Extensions.ItemsSource = extensionList;
         }
 
         private void Button_SelectApp_Click(object sender, RoutedEventArgs e)
@@ -111,7 +118,7 @@ namespace CPRP
 
         private void Button_RemoveSelectedExtensions_Click(object sender, RoutedEventArgs e)
         {
-            IList<object> selectedItems = (IList<object>) listBox_Extensions.SelectedItems;
+            List<string> selectedItems = new List<string>(listBox_Extensions.SelectedItems.Cast<string>());
             if (selectedItems.Count != 0)
             {
                 if (MessageBox.Show("Удалить выбранные расширения из списка?", Title, MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
@@ -126,6 +133,52 @@ namespace CPRP
                     }
                 }
             }
+        }
+
+        private void Button_AddExtension_Click(object sender, RoutedEventArgs e)
+        {
+            AddExtensionWindow addExtension = new AddExtensionWindow();
+            addExtension.ShowDialog();
+            if (!string.IsNullOrEmpty(addExtension.Extension))
+            {
+                if (!extensionList.Contains(addExtension.Extension))
+                    extensionList.Add(addExtension.Extension);
+            }
+        }
+
+        private void Button_Close_Click(object sender, RoutedEventArgs e) => Close();
+
+        private void Button_StartProcess_Click(object sender, RoutedEventArgs e)
+        {
+            if (!File.Exists(textBox_App.Text))
+            {
+                MessageBox.Show("Выберите приложение!", Title, MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+            if (!radioButton_CreateShortcutOnDesktop.IsChecked.Value || extensionList.Count != 0)
+            {
+                if (textBox_OutputFolder.Text.Equals(OutputFolderPlaceholder))
+                {
+                    MessageBox.Show("Выберите папку для выходных файлов!", Title, MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+            }
+            ProcessArgs processArgs = new ProcessArgs(
+                textBox_App.Text,
+                (PriorityItem)comboBox_Priority.SelectedItem,
+                textBox_OutputFolder.Text,
+                radioButton_CreateShortcutOnDesktop.IsChecked.Value,
+                checkBox_IsReplaceDesktopShortcut.IsChecked.Value,
+                extensionList);
+            //
+            // CODE
+            //
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (MessageBox.Show("Закрыть программу?", Title, MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.No)
+                e.Cancel = true;
         }
     }
 }

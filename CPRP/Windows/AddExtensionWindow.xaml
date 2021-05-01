@@ -5,12 +5,16 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CPRP"
         mc:Ignorable="d"
-        Height="108" 
+        Height="120" 
+        MinHeight="120"
         Width="600"
+        MinWidth="600"
+        FontSize="14"
+        ResizeMode="CanMinimize"
         WindowStartupLocation="CenterScreen">
     <Grid Margin="10">
-        <TextBox Margin="0,0,0,0" TextWrapping="NoWrap" VerticalAlignment="Top"/>
-        <Button Content="Закрыть" Height="30" HorizontalAlignment="Right" Margin="0,0,0,0" VerticalAlignment="Bottom" Width="90"/>
-        <Button Content="OK" Height="30" HorizontalAlignment="Right" Margin="0,0,95,0" VerticalAlignment="Bottom" Width="110"/>
+        <TextBox x:Name="textBox_Extension" Margin="0,0,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" GotFocus="TextBox_Extension_GotFocus" LostFocus="TextBox_Extension_LostFocus"/>
+        <Button Content="Закрыть" Height="30" HorizontalAlignment="Right" Margin="0,0,0,0" VerticalAlignment="Bottom" Width="90" Click="Button_Close_Click"/>
+        <Button Content="OK" Height="30" HorizontalAlignment="Right" Margin="0,0,95,0" VerticalAlignment="Bottom" Width="110" Click="Button_OK_Click"/>
     </Grid>
 </Window>

@@ -11,7 +11,8 @@
         MinWidth="704"
         Width="704"
         WindowStartupLocation="CenterScreen"
-        FontSize="14">
+        FontSize="14"
+        Closing="Window_Closing">
     <Grid Margin="10">
         <GroupBox Header="Базовые настройки" Padding="5" VerticalAlignment="Top" Height="Auto">
             <Grid>
@@ -19,7 +20,7 @@
                 <Button Content="Выбрать" HorizontalAlignment="Right" Margin="0,0,0,0" VerticalAlignment="Top" Width="90" Height="25" Click="Button_SelectApp_Click"/>
                 <ComboBox x:Name="comboBox_Priority" HorizontalAlignment="Left" Margin="78,29,0,0" SelectedIndex="0" VerticalAlignment="Top" Width="180"/>
                 <TextBlock HorizontalAlignment="Left" Margin="0,32,0,0" TextWrapping="Wrap" Text="Приоритет:" VerticalAlignment="Top"/>
-                <TextBox x:Name="textBox_OutputFolder" Margin="0,59,95,0" IsReadOnlyCaretVisible="True" TextWrapping="NoWrap" Text="Папка выходных файлов" Foreground="Gray" VerticalAlignment="Top" />
+                <TextBox x:Name="textBox_OutputFolder" Margin="0,59,95,0" IsReadOnlyCaretVisible="True" TextWrapping="NoWrap" Foreground="Gray" VerticalAlignment="Top" />
                 <Button x:Name="button_SelectOutputFolder" Content="Выбрать" HorizontalAlignment="Right" Margin="0,59,0,0" VerticalAlignment="Top" Width="90" Height="25" Click="Button_SelectOutputFolder_Click"/>
             </Grid>
         </GroupBox>
@@ -33,7 +34,7 @@
         <GroupBox Header="Расширения приложения" Margin="0,227,0,34" Padding="5">
             <Grid>
                 <StackPanel Orientation="Horizontal" Height="20" VerticalAlignment="Top" Margin="0,0,0,0">
-                    <Button Style="{StaticResource MenuButtonStyle}" ToolTip="Добавить расширение в список">
+                    <Button Style="{StaticResource MenuButtonStyle}" ToolTip="Добавить расширение в список" Click="Button_AddExtension_Click">
                         <Image Source="/Resources/add.png"/>
                     </Button>
                     <Button Style="{StaticResource MenuButtonStyle}" ToolTip="Удалить расширение(я) из списка" Click="Button_RemoveSelectedExtensions_Click">
@@ -46,7 +47,7 @@
                 <ListBox x:Name="listBox_Extensions" SelectionMode="Multiple" Margin="0,25,0,0"/>
             </Grid>
         </GroupBox>
-        <Button Content="Закрыть" HorizontalAlignment="Right" Height="28" Margin="0,0,0,0" VerticalAlignment="Bottom" Width="90"/>
-        <Button Content="Применить" HorizontalAlignment="Right" Height="28" Margin="0,0,95,0" VerticalAlignment="Bottom" Width="110"/>
+        <Button Content="Закрыть" HorizontalAlignment="Right" Height="28" Margin="0,0,0,0" VerticalAlignment="Bottom" Width="90" Click="Button_Close_Click"/>
+        <Button Content="Применить" HorizontalAlignment="Right" Height="28" Margin="0,0,95,0" VerticalAlignment="Bottom" Width="110" Click="Button_StartProcess_Click"/>
     </Grid>
 </Window>
