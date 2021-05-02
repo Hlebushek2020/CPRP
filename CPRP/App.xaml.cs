@@ -14,7 +14,7 @@ namespace CPRP
     /// </summary>
     public partial class App : Application
     {
-        public static string Name { get; } = Assembly.GetExecutingAssembly()
-            .GetCustomAttribute<AssemblyTitleAttribute>().Title;
+        public static string Name { get; } = Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyTitleAttribute>().Title;
+        public static string Location { get; } = Assembly.GetExecutingAssembly().Location;
     }
 }

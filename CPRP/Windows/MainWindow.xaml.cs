@@ -16,7 +16,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace CPRP
 {
@@ -148,6 +147,7 @@ namespace CPRP
 
         private void Button_Close_Click(object sender, RoutedEventArgs e) => Close();
 
+        #region Process
         private void Button_StartProcess_Click(object sender, RoutedEventArgs e)
         {
             if (!File.Exists(textBox_App.Text))
@@ -173,7 +173,42 @@ namespace CPRP
             //
             // CODE
             //
+            Process(processArgs);
         }
+
+        private void Process(ProcessArgs args)
+        {
+            // shortcut
+            string shortcutName = $"{Path.GetFileNameWithoutExtension(args.App)}.lnk";
+            string shortcutPath = string.Empty;
+            if (args.CreateShortcutOnDesktop)
+            {
+                string shortcutPathTmp = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
+                shortcutPath = Path.Combine(shortcutPathTmp, shortcutName);
+                if (!args.IsReplaceDesktopShortcut)
+                {
+                    int index = 0;
+                    while (File.Exists(shortcutPath))
+                    {
+                        shortcutPath = Path.Combine(shortcutPathTmp, $"{index}-{shortcutName}");
+                        index++;
+                    }
+                }
+            }
+            else
+            {
+                shortcutPath = Path.Combine(args.OutputFolder, shortcutName);
+            }
+            IWshRuntimeLibrary.WshShell wsh = new IWshRuntimeLibrary.WshShell();
+            IWshRuntimeLibrary.IWshShortcut shortcut = (IWshRuntimeLibrary.IWshShortcut)wsh.CreateShortcut(shortcutPath);
+            shortcut.TargetPath = App.Location;
+            shortcut.IconLocation = args.App;
+            shortcut.Arguments = $"\"{args.App}\" {args.PriorityArg}";
+            shortcut.WorkingDirectory = Path.GetDirectoryName(args.App);
+            shortcut.Save();
+            // registry
+        }
+        #endregion
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
