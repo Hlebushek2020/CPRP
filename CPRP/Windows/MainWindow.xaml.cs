@@ -1,4 +1,5 @@
 ﻿using CPRP.Classes;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -71,8 +72,7 @@ namespace CPRP
         {
             using (System.Windows.Forms.FolderBrowserDialog fbd = new System.Windows.Forms.FolderBrowserDialog
             {
-                ShowNewFolderButton = true,
-                RootFolder = Environment.SpecialFolder.MyDocuments
+                ShowNewFolderButton = true
             })
             {
                 if (fbd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
@@ -207,6 +207,40 @@ namespace CPRP
             shortcut.WorkingDirectory = Path.GetDirectoryName(args.App);
             shortcut.Save();
             // registry
+            RegistryRecovery registryRecovery = new RegistryRecovery();
+            foreach (string extension in args.ExtensionList)
+            {
+                // get default program and icon from HKEY_CURRENT_USER
+                string defaultProgram = string.Empty;
+                string defaultIcon = args.App;
+                using (RegistryKey keyCurrentUserClasses = Registry.CurrentUser.OpenSubKey($@"Software\Classes"))
+                {
+                    using (RegistryKey keyClass = keyCurrentUserClasses.OpenSubKey($".{extension}"))
+                    {
+                        if (keyClass != null)
+                        {
+                            object defaultProgramObj = keyClass.GetValue(string.Empty);
+                            if (defaultProgramObj != null)
+                            {
+                                defaultProgram = (string)defaultProgramObj;
+                                using (RegistryKey keyClassProg = keyCurrentUserClasses.OpenSubKey($@"{defaultProgram}\DefaultIcon"))
+                                {
+                                    if (keyClassProg != null)
+                                    {
+                                        object defaultIconObj = keyClassProg.GetValue(string.Empty);
+                                        if (defaultIconObj != null)
+                                        {
+                                            defaultIcon = (string)defaultIconObj;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                // add recovery data
+                registryRecovery.DefaultValues.Add(extension, defaultProgram);
+            }
         }
         #endregion
 
