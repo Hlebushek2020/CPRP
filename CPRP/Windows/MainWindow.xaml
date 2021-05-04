@@ -12,7 +12,8 @@
         Width="704"
         WindowStartupLocation="CenterScreen"
         FontSize="14"
-        Closing="Window_Closing">
+        Closing="Window_Closing"
+        Loaded="Window_Loaded">
     <Grid Margin="10">
         <GroupBox Header="Базовые настройки" Padding="5" VerticalAlignment="Top" Height="Auto">
             <Grid>
@@ -49,5 +50,13 @@
         </GroupBox>
         <Button Content="Закрыть" HorizontalAlignment="Right" Height="28" Margin="0,0,0,0" VerticalAlignment="Bottom" Width="90" Click="Button_Close_Click"/>
         <Button Content="Применить" HorizontalAlignment="Right" Height="28" Margin="0,0,95,0" VerticalAlignment="Bottom" Width="110" Click="Button_StartProcess_Click"/>
+        <Grid x:Name="grid_Progress" Margin="-10" Background="#4C000000" Visibility="Hidden">
+            <Border Margin="10" VerticalAlignment="Center" Padding="5" CornerRadius="2" BorderThickness="2" BorderBrush="Orange" Background="White">
+                <Grid>
+                    <ProgressBar x:Name="progressBar_Progress" VerticalAlignment="Top" Height="20" Margin="0,0,0,0"/>
+                    <TextBlock x:Name="textBlock_Progress" VerticalAlignment="Top" Height="56" Margin="0,25,0,0" TextWrapping="Wrap"/>
+                </Grid>
+            </Border>
+        </Grid>
     </Grid>
 </Window>

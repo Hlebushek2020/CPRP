@@ -170,60 +170,123 @@ namespace CPRP
                 radioButton_CreateShortcutOnDesktop.IsChecked.Value,
                 checkBox_IsReplaceDesktopShortcut.IsChecked.Value,
                 extensionList);
-            //
-            // CODE
-            //
-            Process(processArgs);
+            Task.Run(() => Process(processArgs));
         }
 
         private void Process(ProcessArgs args)
         {
-            // shortcut
-            string shortcutName = $"{Path.GetFileNameWithoutExtension(args.App)}.lnk";
-            string shortcutPath = string.Empty;
-            if (args.CreateShortcutOnDesktop)
+            try
             {
-                string shortcutPathTmp = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
-                shortcutPath = Path.Combine(shortcutPathTmp, shortcutName);
-                if (!args.IsReplaceDesktopShortcut)
+                Dispatcher.Invoke(() =>
                 {
-                    int index = 0;
-                    while (File.Exists(shortcutPath))
+                    grid_Progress.Visibility = Visibility.Visible;
+                    progressBar_Progress.IsIndeterminate = false;
+                    textBlock_Progress.Text = "Создание ярлыка";
+                });
+                // shortcut
+                string shortcutName = $"{Path.GetFileNameWithoutExtension(args.App)}.lnk";
+                string shortcutPath = string.Empty;
+                if (args.CreateShortcutOnDesktop)
+                {
+                    string shortcutPathTmp = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
+                    shortcutPath = Path.Combine(shortcutPathTmp, shortcutName);
+                    if (!args.IsReplaceDesktopShortcut)
                     {
-                        shortcutPath = Path.Combine(shortcutPathTmp, $"{index}-{shortcutName}");
-                        index++;
+                        int index = 0;
+                        while (File.Exists(shortcutPath))
+                        {
+                            shortcutPath = Path.Combine(shortcutPathTmp, $"{index}-{shortcutName}");
+                            index++;
+                        }
                     }
                 }
-            }
-            else
-            {
-                shortcutPath = Path.Combine(args.OutputFolder, shortcutName);
-            }
-            IWshRuntimeLibrary.WshShell wsh = new IWshRuntimeLibrary.WshShell();
-            IWshRuntimeLibrary.IWshShortcut shortcut = (IWshRuntimeLibrary.IWshShortcut)wsh.CreateShortcut(shortcutPath);
-            shortcut.TargetPath = App.Location;
-            shortcut.IconLocation = args.App;
-            shortcut.Arguments = $"\"{args.App}\" {args.PriorityArg}";
-            shortcut.WorkingDirectory = Path.GetDirectoryName(args.App);
-            shortcut.Save();
-            // registry
-            RegistryRecovery registryRecovery = new RegistryRecovery();
-            foreach (string extension in args.ExtensionList)
-            {
-                // get default program and icon from HKEY_CURRENT_USER
+                else
+                {
+                    shortcutPath = Path.Combine(args.OutputFolder, shortcutName);
+                }
+                IWshRuntimeLibrary.WshShell wsh = new IWshRuntimeLibrary.WshShell();
+                IWshRuntimeLibrary.IWshShortcut shortcut = (IWshRuntimeLibrary.IWshShortcut)wsh.CreateShortcut(shortcutPath);
+                shortcut.TargetPath = App.LocationRunner;
+                shortcut.IconLocation = args.App;
+                shortcut.Arguments = $"\"{args.App}\" {args.PriorityArg}";
+                shortcut.WorkingDirectory = Path.GetDirectoryName(args.App);
+                shortcut.Save();
+                // registry
                 string defaultProgram = string.Empty;
                 string defaultIcon = args.App;
-                using (RegistryKey keyCurrentUserClasses = Registry.CurrentUser.OpenSubKey($@"Software\Classes"))
+                RegistryKey keyCurrentUserClasses = null;
+                RegistryKey keyLocalMachineClasses = null;
+                RegistryRecovery registryRecovery = new RegistryRecovery();
+                try
                 {
-                    using (RegistryKey keyClass = keyCurrentUserClasses.OpenSubKey($".{extension}"))
+                    Dispatcher.Invoke((Action<int>)((int max) =>
                     {
-                        if (keyClass != null)
+                        progressBar_Progress.IsIndeterminate = true;
+                        progressBar_Progress.Value = 0;
+                        progressBar_Progress.Maximum = max;
+                        textBlock_Progress.Text = "Чтение параметров реестра";
+                    }), args.ExtensionList.Count);
+                    keyCurrentUserClasses = Registry.CurrentUser.OpenSubKey($@"Software\Classes", true);
+                    keyLocalMachineClasses = Registry.LocalMachine.OpenSubKey($@"Software\Classes");
+                    foreach (string extension in args.ExtensionList)
+                    {
+                        // get default program and icon from HKEY_CURRENT_USER
+                        Dispatcher.Invoke((Action<string>)((string argExtension) =>
                         {
-                            object defaultProgramObj = keyClass.GetValue(string.Empty);
-                            if (defaultProgramObj != null)
+                            textBlock_Progress.Text = $"Чтение параметров реестра для расширения {extension}";
+                        }), extension);
+                        using (RegistryKey keyClass = keyCurrentUserClasses.OpenSubKey($".{extension}"))
+                        {
+                            if (keyClass != null)
                             {
-                                defaultProgram = (string)defaultProgramObj;
-                                using (RegistryKey keyClassProg = keyCurrentUserClasses.OpenSubKey($@"{defaultProgram}\DefaultIcon"))
+                                object defaultProgramObj = keyClass.GetValue(string.Empty);
+                                if (defaultProgramObj != null)
+                                {
+                                    defaultProgram = (string)defaultProgramObj;
+                                    using (RegistryKey keyClassProg = keyCurrentUserClasses.OpenSubKey($@"{defaultProgram}\DefaultIcon"))
+                                    {
+                                        if (keyClassProg != null)
+                                        {
+                                            object defaultIconObj = keyClassProg.GetValue(string.Empty);
+                                            if (defaultIconObj != null)
+                                            {
+                                                defaultIcon = (string)defaultIconObj;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        // add recovery data
+                        Dispatcher.Invoke((Action<string>)((string argExtension) =>
+                        {
+                            textBlock_Progress.Text = $"Добавление данных для востановления";
+                        }), extension);
+                        registryRecovery.DefaultValues.Add(extension, defaultProgram);
+                        // get default program and icon from HKEY_LOCAL_MACHINE
+                        Dispatcher.Invoke((Action<string>)((string argExtension) =>
+                        {
+                            textBlock_Progress.Text = $"Чтение параметров реестра для расширения {extension}";
+                        }), extension);
+                        if (string.IsNullOrEmpty(defaultProgram) || defaultIcon.Equals(args.App))
+                        {
+                            if (string.IsNullOrEmpty(defaultProgram))
+                            {
+                                using (RegistryKey keyClass = keyLocalMachineClasses.OpenSubKey($".{extension}"))
+                                {
+                                    if (keyClass != null)
+                                    {
+                                        object defaultProgramObj = keyClass.GetValue(string.Empty);
+                                        if (defaultProgramObj != null)
+                                        {
+                                            defaultProgram = (string)defaultProgramObj;
+                                        }
+                                    }
+                                }
+                            }
+                            if (!string.IsNullOrEmpty(defaultProgram) && defaultIcon.Equals(args.App))
+                            {
+                                using (RegistryKey keyClassProg = keyLocalMachineClasses.OpenSubKey($@"{defaultProgram}\DefaultIcon"))
                                 {
                                     if (keyClassProg != null)
                                     {
@@ -236,10 +299,65 @@ namespace CPRP
                                 }
                             }
                         }
+                        // create runner class for extension
+                        Dispatcher.Invoke((Action<string>)((string argExtension) =>
+                        {
+                            textBlock_Progress.Text = $"Установка новых значений параметров реестра для расширения {extension}";
+                        }), extension);
+                        string runnerClassName = $"CPRP_{extension}";
+                        using (RegistryKey keyCprpClass = keyCurrentUserClasses.CreateSubKey(runnerClassName, true))
+                        {
+                            using (RegistryKey keyCprpDefaultIcon = keyCprpClass.CreateSubKey("DefaultIcon", true))
+                            {
+                                keyCprpDefaultIcon.SetValue(string.Empty, defaultIcon);
+                            }
+                            using (RegistryKey keyCprpCommandOpen = keyCprpClass.CreateSubKey(@"Shell\Open\Command", true))
+                                //.CreateSubKey("Open", true).CreateSubKey("Command", true))
+                            {
+                                keyCprpCommandOpen.SetValue(string.Empty, $"\"{App.LocationRunner}\" \"{args.App}\" %1 {args.PriorityArg}");
+                            }
+                        }
+                        // set runner for extension class
+                        using (RegistryKey keyClass = keyCurrentUserClasses.CreateSubKey($".{extension}"))
+                        {
+                            keyClass.SetValue(string.Empty, runnerClassName);
+                        }
+                        Dispatcher.Invoke(() =>
+                        {
+                            progressBar_Progress.Value++;
+                        });
                     }
+                    Dispatcher.Invoke(() =>
+                    {
+                        progressBar_Progress.IsIndeterminate = true;
+                        textBlock_Progress.Text = "Завершение";
+                    });
                 }
-                // add recovery data
-                registryRecovery.DefaultValues.Add(extension, defaultProgram);
+                finally
+                {
+                    // save recovery data
+                    registryRecovery.Save(args.OutputFolder);
+                    // dispose registry head key
+                    if (keyCurrentUserClasses != null)
+                        keyCurrentUserClasses.Dispose();
+                    if (keyLocalMachineClasses != null)
+                        keyLocalMachineClasses.Dispose();
+                }
+            }
+            catch (Exception ex)
+            {
+                Dispatcher.Invoke((Action<string>)((string exMessage) =>
+                {
+                    MessageBox.Show(exMessage, Title, MessageBoxButton.OK, MessageBoxImage.Error);
+                }), ex.Message);
+            }
+            finally
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    progressBar_Progress.IsIndeterminate = true;
+                    grid_Progress.Visibility = Visibility.Hidden;
+                });
             }
         }
         #endregion
@@ -248,6 +366,11 @@ namespace CPRP
         {
             if (MessageBox.Show("Закрыть программу?", Title, MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.No)
                 e.Cancel = true;
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Пожалуйста прочтите инструкцию перед использованием!", Title, MessageBoxButton.OK, MessageBoxImage.Warning);
         }
     }
 }
