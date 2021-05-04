@@ -15,7 +15,7 @@ namespace CPRP.Classes
         public void Save(string outputFolder)
         {
             string jsonFile = Path.Combine(outputFolder, "registryRecovery.json");
-            string json = JsonConvert.SerializeObject(this);
+            string json = JsonConvert.SerializeObject(this, Formatting.Indented);
             using (StreamWriter streamWriter = new StreamWriter(jsonFile, false, Encoding.UTF8))
             {
                 streamWriter.Write(json);

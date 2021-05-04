@@ -312,7 +312,6 @@ namespace CPRP
                                 keyCprpDefaultIcon.SetValue(string.Empty, defaultIcon);
                             }
                             using (RegistryKey keyCprpCommandOpen = keyCprpClass.CreateSubKey(@"Shell\Open\Command", true))
-                                //.CreateSubKey("Open", true).CreateSubKey("Command", true))
                             {
                                 keyCprpCommandOpen.SetValue(string.Empty, $"\"{App.LocationRunner}\" \"{args.App}\" %1 {args.PriorityArg}");
                             }
