@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // Общие сведения об этой сборке предоставляются следующим набором
 // набора атрибутов. Измените значения этих атрибутов для изменения сведений,
 // связанные с этой сборкой.
-[assembly: AssemblyTitle("CPRP_Runner")]
+[assembly: AssemblyTitle("CPRP Runner")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("CPRP_Runner")]
-[assembly: AssemblyCopyright("Copyright ©  2021")]
+[assembly: AssemblyCompany("Sergey Govorunov")]
+[assembly: AssemblyProduct("CPRP Runner")]
+[assembly: AssemblyCopyright("Sergey Govorunov")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

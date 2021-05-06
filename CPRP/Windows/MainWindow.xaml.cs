@@ -342,6 +342,10 @@ namespace CPRP
                     if (keyLocalMachineClasses != null)
                         keyLocalMachineClasses.Dispose();
                 }
+                Dispatcher.Invoke(() =>
+                {
+                    MessageBox.Show("Готово!", Title, MessageBoxButton.OK, MessageBoxImage.Information);
+                });
             }
             catch (Exception ex)
             {
@@ -365,11 +369,6 @@ namespace CPRP
         {
             if (MessageBox.Show("Закрыть программу?", Title, MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.No)
                 e.Cancel = true;
-        }
-
-        private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
-            MessageBox.Show("Пожалуйста прочтите инструкцию перед использованием!", Title, MessageBoxButton.OK, MessageBoxImage.Warning);
         }
     }
 }

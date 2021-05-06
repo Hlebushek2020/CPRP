@@ -10,9 +10,9 @@ using System.Windows;
 [assembly: AssemblyTitle("CPRP")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Sergey Govorunov")]
 [assembly: AssemblyProduct("CPRP")]
-[assembly: AssemblyCopyright("Copyright ©  2021")]
+[assembly: AssemblyCopyright("Sergey Govorunov")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

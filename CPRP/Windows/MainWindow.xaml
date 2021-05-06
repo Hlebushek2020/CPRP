@@ -12,8 +12,7 @@
         Width="704"
         WindowStartupLocation="CenterScreen"
         FontSize="14"
-        Closing="Window_Closing"
-        Loaded="Window_Loaded">
+        Closing="Window_Closing">
     <Grid Margin="10">
         <GroupBox Header="Базовые настройки" Padding="5" VerticalAlignment="Top" Height="Auto">
             <Grid>
