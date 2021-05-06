@@ -21,16 +21,16 @@ Global
 		{F252BFBD-979E-42D0-8E1E-84850EE0289D}.Debug|x64.Build.0 = Debug|x64
 		{F252BFBD-979E-42D0-8E1E-84850EE0289D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F252BFBD-979E-42D0-8E1E-84850EE0289D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F252BFBD-979E-42D0-8E1E-84850EE0289D}.Release|x64.ActiveCfg = Release|Any CPU
-		{F252BFBD-979E-42D0-8E1E-84850EE0289D}.Release|x64.Build.0 = Release|Any CPU
+		{F252BFBD-979E-42D0-8E1E-84850EE0289D}.Release|x64.ActiveCfg = Release|x64
+		{F252BFBD-979E-42D0-8E1E-84850EE0289D}.Release|x64.Build.0 = Release|x64
 		{F650AC52-A8B5-4F47-835C-20BACC96C342}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F650AC52-A8B5-4F47-835C-20BACC96C342}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F650AC52-A8B5-4F47-835C-20BACC96C342}.Debug|x64.ActiveCfg = Debug|x64
 		{F650AC52-A8B5-4F47-835C-20BACC96C342}.Debug|x64.Build.0 = Debug|x64
 		{F650AC52-A8B5-4F47-835C-20BACC96C342}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F650AC52-A8B5-4F47-835C-20BACC96C342}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F650AC52-A8B5-4F47-835C-20BACC96C342}.Release|x64.ActiveCfg = Release|Any CPU
-		{F650AC52-A8B5-4F47-835C-20BACC96C342}.Release|x64.Build.0 = Release|Any CPU
+		{F650AC52-A8B5-4F47-835C-20BACC96C342}.Release|x64.ActiveCfg = Release|x64
+		{F650AC52-A8B5-4F47-835C-20BACC96C342}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

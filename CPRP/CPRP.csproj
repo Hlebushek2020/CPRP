@@ -92,7 +92,9 @@
       <SubType>Designer</SubType>
     </Page>
     <Compile Include="Classes\ProcessArgs.cs" />
+    <Compile Include="Classes\RegistryRecoveryInfo.cs" />
     <Compile Include="Classes\RegistryRecovery.cs" />
+    <Compile Include="Classes\RegistrySectionUserChoice.cs" />
     <Compile Include="Windows\AddExtensionWindow.xaml.cs">
       <DependentUpon>AddExtensionWindow.xaml</DependentUpon>
     </Compile>
@@ -152,6 +154,9 @@
       <Isolated>False</Isolated>
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </COMReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="tmp.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

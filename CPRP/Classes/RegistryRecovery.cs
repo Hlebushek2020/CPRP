@@ -11,7 +11,7 @@ namespace CPRP.Classes
     public class RegistryRecovery
     {
         public DateTime DateCreation { get; } = DateTime.Now.Date;
-        public Dictionary<string, string> DefaultValues { get; } = new Dictionary<string, string>();
+        public Dictionary<string, RegistryRecoveryInfo> DefaultValues { get; } = new Dictionary<string, RegistryRecoveryInfo>();
         public void Save(string outputFolder)
         {
             string jsonFile = Path.Combine(outputFolder, "registryRecovery.json");
