@@ -214,7 +214,8 @@ namespace CPRP
                 // registry
                 string defaultProgram = string.Empty;
                 string defaultIcon = args.App;
-                RegistryKey keyCurrentUserClasses = null;
+                RegistryKey keyClassesRoot = null;
+                RegistryKey keyCurrentUserSoftware = null;
                 RegistryKey keyLocalMachineClasses = null;
                 RegistryRecovery registryRecovery = new RegistryRecovery();
                 try
@@ -226,7 +227,8 @@ namespace CPRP
                         progressBar_Progress.Maximum = max;
                         textBlock_Progress.Text = "Чтение параметров реестра";
                     }), args.ExtensionList.Count);
-                    keyCurrentUserClasses = Registry.CurrentUser.OpenSubKey($@"Software\Classes", true);
+                    keyClassesRoot = Registry.ClassesRoot;
+                    keyCurrentUserSoftware = Registry.CurrentUser.OpenSubKey("Software");
                     keyLocalMachineClasses = Registry.LocalMachine.OpenSubKey($@"Software\Classes");
                     foreach (string extension in args.ExtensionList)
                     {
@@ -236,23 +238,26 @@ namespace CPRP
                         {
                             textBlock_Progress.Text = $"Чтение параметров реестра для расширения {extension}";
                         }), extension);
-                        using (RegistryKey keyClass = keyCurrentUserClasses.OpenSubKey($".{extension}"))
+                        using (RegistryKey keyCurrentUserClasses = keyCurrentUserSoftware.OpenSubKey("Classes"))
                         {
-                            if (keyClass != null)
+                            using (RegistryKey keyClass = keyCurrentUserClasses.OpenSubKey($".{extension}"))
                             {
-                                object defaultProgramObj = keyClass.GetValue(string.Empty);
-                                if (defaultProgramObj != null)
+                                if (keyClass != null)
                                 {
-                                    defaultProgram = (string)defaultProgramObj;
-                                    registryRecoveryInfo.DefaultUser = defaultProgram;
-                                    using (RegistryKey keyClassProg = keyCurrentUserClasses.OpenSubKey($@"{defaultProgram}\DefaultIcon"))
+                                    object defaultProgramObj = keyClass.GetValue(string.Empty);
+                                    if (defaultProgramObj != null)
                                     {
-                                        if (keyClassProg != null)
+                                        defaultProgram = (string)defaultProgramObj;
+                                        registryRecoveryInfo.DefaultUser = defaultProgram;
+                                        using (RegistryKey keyClassProg = keyCurrentUserClasses.OpenSubKey($@"{defaultProgram}\DefaultIcon"))
                                         {
-                                            object defaultIconObj = keyClassProg.GetValue(string.Empty);
-                                            if (defaultIconObj != null)
+                                            if (keyClassProg != null)
                                             {
-                                                defaultIcon = (string)defaultIconObj;
+                                                object defaultIconObj = keyClassProg.GetValue(string.Empty);
+                                                if (defaultIconObj != null)
+                                                {
+                                                    defaultIcon = (string)defaultIconObj;
+                                                }
                                             }
                                         }
                                     }
@@ -294,23 +299,54 @@ namespace CPRP
                         {
                             textBlock_Progress.Text = $"Установка новых значений параметров реестра для расширения {extension}";
                         }), extension);
-                        //string runnerClassName = $"CPRP_{extension}";
-                        //using (RegistryKey keyCprpClass = keyCurrentUserClasses.CreateSubKey(runnerClassName, true))
-                        //{
-                        //    using (RegistryKey keyCprpDefaultIcon = keyCprpClass.CreateSubKey("DefaultIcon", true))
-                        //    {
-                        //        keyCprpDefaultIcon.SetValue(string.Empty, defaultIcon);
-                        //    }
-                        //    using (RegistryKey keyCprpCommandOpen = keyCprpClass.CreateSubKey(@"Shell\Open\Command", true))
-                        //    {
-                        //        keyCprpCommandOpen.SetValue(string.Empty, $"\"{App.LocationRunner}\" \"{args.App}\" %1 {args.PriorityArg}");
-                        //    }
-                        //}
-                        //// set runner for extension class
-                        //using (RegistryKey keyClass = keyCurrentUserClasses.CreateSubKey($".{extension}"))
-                        //{
-                        //    keyClass.SetValue(string.Empty, runnerClassName);
-                        //}
+                        string runnerClassName = $"CPRP_{extension}";
+                        using (RegistryKey keyRunnerClass = keyClassesRoot.CreateSubKey(runnerClassName, true))
+                        {
+                            using (RegistryKey keyDefaultIcon = keyRunnerClass.CreateSubKey("DefaultIcon"))
+                            {
+                                keyDefaultIcon.SetValue(string.Empty, defaultIcon);
+                            }
+                            using (RegistryKey keyOpenCommand = keyRunnerClass.CreateSubKey(@"Shell\Open\Command", true))
+                            {
+                                keyOpenCommand.SetValue(string.Empty, $"\"{App.LocationRunner}\" \"{args.App}\" %1 {args.PriorityArg}");
+                            }
+                            using (RegistryKey keyApplication = keyRunnerClass.CreateSubKey("Application"))
+                            {
+                                keyApplication.SetValue("ApplicationName", $"CPRP for {extension} extension");
+                                keyApplication.SetValue("ApplicationIcon", defaultIcon);
+                            }
+                        }
+                        // delete selected user program and add runner class in program list
+                        using (RegistryKey keyFileExts = keyCurrentUserSoftware.OpenSubKey($@"Microsoft\Windows\CurrentVersion\Explorer\FileExts\.{extension}", true))
+                        {
+                            if (keyFileExts != null)
+                            {
+                                using (RegistryKey keyUserChoice = keyFileExts.OpenSubKey(RegistryRecoveryInfo.KeyUserChoice))
+                                {
+                                    if (keyUserChoice != null)
+                                    {
+                                        object valueObj = keyUserChoice.GetValue(RegistrySectionUserChoice.KeyHash);
+                                        if (valueObj != null)
+                                            registryRecoveryInfo.UserChoice.Hash = (string)valueObj;
+                                        valueObj = keyUserChoice.GetValue(RegistrySectionUserChoice.KeyProgId);
+                                        if (valueObj != null)
+                                            registryRecoveryInfo.UserChoice.ProgId = (string)valueObj;
+                                    }
+                                }
+                                keyFileExts.DeleteSubKeyTree(RegistryRecoveryInfo.KeyUserChoice, false);
+                                using (RegistryKey keyOpenWithProgids = keyFileExts.CreateSubKey(RegistryRecoveryInfo.KeyOpenWithProgids))
+                                {
+                                    keyOpenWithProgids.SetValue(runnerClassName, null, RegistryValueKind.None);
+                                }
+                            }
+                        }
+                        // add recovery data
+                        registryRecovery.DefaultValues.Add(extension, registryRecoveryInfo);
+                        // set runner class
+                        using (RegistryKey keyCurrentClass = keyClassesRoot.OpenSubKey($".{extension}", true))
+                        {
+                            keyCurrentClass.SetValue(string.Empty, runnerClassName);
+                        }
                         Dispatcher.Invoke(() =>
                         {
                             progressBar_Progress.Value++;
@@ -327,10 +363,12 @@ namespace CPRP
                     // save recovery data
                     registryRecovery.Save(args.OutputFolder);
                     // dispose registry head key
-                    if (keyCurrentUserClasses != null)
-                        keyCurrentUserClasses.Dispose();
                     if (keyLocalMachineClasses != null)
                         keyLocalMachineClasses.Dispose();
+                    if (keyCurrentUserSoftware != null)
+                        keyCurrentUserSoftware.Dispose();
+                    if (keyClassesRoot != null)
+                        keyClassesRoot.Dispose();
                 }
                 Dispatcher.Invoke(() =>
                 {

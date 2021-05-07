@@ -10,8 +10,6 @@ namespace CPRP.Classes
     public class RegistryRecoveryInfo
     {
         [JsonIgnore]
-        public const string KeyFullFileExts = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FileExts";
-        [JsonIgnore]
         public const string KeyUserChoice = "UserChoice";
         [JsonIgnore]
         public const string KeyOpenWithProgids = "OpenWithProgids";
