@@ -294,6 +294,27 @@ namespace CPRP
                                 }
                             }
                         }
+                        // read Explorer\FileExts\.{extension}\UserChoice
+                        using (RegistryKey keyFileExts = keyCurrentUserSoftware.OpenSubKey($@"Microsoft\Windows\CurrentVersion\Explorer\FileExts\.{extension}"))
+                        {
+                            if (keyFileExts != null)
+                            {
+                                using (RegistryKey keyUserChoice = keyFileExts.OpenSubKey(RegistryRecoveryInfo.KeyUserChoice))
+                                {
+                                    if (keyUserChoice != null)
+                                    {
+                                        object valueObj = keyUserChoice.GetValue(RegistrySectionUserChoice.KeyHash);
+                                        if (valueObj != null)
+                                            registryRecoveryInfo.UserChoice.Hash = (string)valueObj;
+                                        valueObj = keyUserChoice.GetValue(RegistrySectionUserChoice.KeyProgId);
+                                        if (valueObj != null)
+                                            registryRecoveryInfo.UserChoice.ProgId = (string)valueObj;
+                                    }
+                                }
+                            }
+                        }
+                        // add recovery data
+                        registryRecovery.DefaultValues.Add(extension, registryRecoveryInfo);
                         // create runner class for extension
                         Dispatcher.Invoke((Action<string>)((string argExtension) =>
                         {
@@ -321,27 +342,13 @@ namespace CPRP
                         {
                             if (keyFileExts != null)
                             {
-                                using (RegistryKey keyUserChoice = keyFileExts.OpenSubKey(RegistryRecoveryInfo.KeyUserChoice))
-                                {
-                                    if (keyUserChoice != null)
-                                    {
-                                        object valueObj = keyUserChoice.GetValue(RegistrySectionUserChoice.KeyHash);
-                                        if (valueObj != null)
-                                            registryRecoveryInfo.UserChoice.Hash = (string)valueObj;
-                                        valueObj = keyUserChoice.GetValue(RegistrySectionUserChoice.KeyProgId);
-                                        if (valueObj != null)
-                                            registryRecoveryInfo.UserChoice.ProgId = (string)valueObj;
-                                    }
-                                }
                                 keyFileExts.DeleteSubKeyTree(RegistryRecoveryInfo.KeyUserChoice, false);
                                 using (RegistryKey keyOpenWithProgids = keyFileExts.CreateSubKey(RegistryRecoveryInfo.KeyOpenWithProgids))
                                 {
-                                    keyOpenWithProgids.SetValue(runnerClassName, null, RegistryValueKind.None);
+                                    keyOpenWithProgids.SetValue(runnerClassName, null, RegistryValueKind.None); //error // - 0 -
                                 }
                             }
                         }
-                        // add recovery data
-                        registryRecovery.DefaultValues.Add(extension, registryRecoveryInfo);
                         // set runner class
                         using (RegistryKey keyCurrentClass = keyClassesRoot.OpenSubKey($".{extension}", true))
                         {
