@@ -342,10 +342,10 @@ namespace CPRP
                         {
                             if (keyFileExts != null)
                             {
-                                keyFileExts.DeleteSubKeyTree(RegistryRecoveryInfo.KeyUserChoice, false);
+                                keyFileExts.DeleteSubKeyTree(RegistryRecoveryInfo.KeyUserChoice, false); // ?? no job
                                 using (RegistryKey keyOpenWithProgids = keyFileExts.CreateSubKey(RegistryRecoveryInfo.KeyOpenWithProgids))
                                 {
-                                    keyOpenWithProgids.SetValue(runnerClassName, null, RegistryValueKind.None); //error // - 0 -
+                                    keyOpenWithProgids.SetValue(runnerClassName, new byte[] { }, RegistryValueKind.None);
                                 }
                             }
                         }
