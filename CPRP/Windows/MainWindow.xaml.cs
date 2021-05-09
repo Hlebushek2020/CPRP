@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -342,7 +343,7 @@ namespace CPRP
                         {
                             if (keyFileExts != null)
                             {
-                                keyFileExts.DeleteSubKeyTree(RegistryRecoveryInfo.KeyUserChoice, false); // ?? no job
+                                keyFileExts.DeleteSubKey(RegistryRecoveryInfo.KeyUserChoice, false);
                                 using (RegistryKey keyOpenWithProgids = keyFileExts.CreateSubKey(RegistryRecoveryInfo.KeyOpenWithProgids))
                                 {
                                     keyOpenWithProgids.SetValue(runnerClassName, new byte[] { }, RegistryValueKind.None);
