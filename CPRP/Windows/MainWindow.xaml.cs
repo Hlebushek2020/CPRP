@@ -330,7 +330,7 @@ namespace CPRP
                             }
                             using (RegistryKey keyOpenCommand = keyRunnerClass.CreateSubKey(@"Shell\Open\Command", true))
                             {
-                                keyOpenCommand.SetValue(string.Empty, $"\"{App.LocationRunner}\" \"{args.App}\" %1 {args.PriorityArg}");
+                                keyOpenCommand.SetValue(string.Empty, $"\"{App.LocationRunner}\" \"{args.App}\" \"%1\" {args.PriorityArg}");
                             }
                             using (RegistryKey keyApplication = keyRunnerClass.CreateSubKey("Application"))
                             {
